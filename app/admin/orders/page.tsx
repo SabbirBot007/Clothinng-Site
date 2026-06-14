@@ -28,12 +28,12 @@ export default async function AdminOrdersPage() {
 
   const stats = {
     total: orders.length,
-    pending: orders.filter((o) => o.status === "PENDING").length,
-    processing: orders.filter((o) => o.status === "PROCESSING").length,
-    shipped: orders.filter((o) => o.status === "SHIPPED").length,
-    delivered: orders.filter((o) => o.status === "DELIVERED").length,
+    pending: orders.filter((o: any) => o.status === "PENDING").length,
+    processing: orders.filter((o: any) => o.status === "PROCESSING").length,
+    shipped: orders.filter((o: any) => o.status === "SHIPPED").length,
+    delivered: orders.filter((o: any) => o.status === "DELIVERED").length,
     revenue: orders
-      .filter((o) => o.status === "DELIVERED")
+      .filter((o: any) => o.status === "DELIVERED")
       .reduce((sum, o) => sum + Number(o.total), 0),
   }
 
