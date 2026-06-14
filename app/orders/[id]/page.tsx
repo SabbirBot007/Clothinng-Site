@@ -178,7 +178,7 @@ export default async function OrderDetailPage({ params }: Props) {
               </h2>
 
               <div style={{ display: "flex", flexDirection: "column" }}>
-                {order.items.map((item, i) => (
+                {order.items.map((item: any, i: number) => (
                   <div key={item.id} style={{
                     display: "flex", gap: "16px", alignItems: "center",
                     padding: "16px 0",
