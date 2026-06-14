@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import db from "@/lib/db"
+import { rateLimit } from "@/lib/rateLimit"
 
 export async function GET() {
   try {
@@ -35,16 +36,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Rate limit: max 30 cart additions per minute per user
+    if (rateLimit(`cart:${session.user.id}`, 30, 60_000)) {
+      return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429 })
+    }
+
     const { productId, variantId, quantity = 1 } = await req.json()
 
     if (!productId || !variantId) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 })
     }
 
+    // Validate quantity is a sane positive integer
+    const qty = parseInt(quantity)
+    if (!Number.isInteger(qty) || qty < 1 || qty > 50) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 })
+    }
+
     // Check stock
     const variant = await db.productVariant.findUnique({ where: { id: variantId } })
     if (!variant || variant.stock === 0) {
       return NextResponse.json({ error: "Out of stock" }, { status: 400 })
+    }
+    if (qty > variant.stock) {
+      return NextResponse.json({ error: `Only ${variant.stock} left in stock` }, { status: 400 })
     }
 
     // Upsert cart item
@@ -56,13 +71,13 @@ export async function POST(req: Request) {
         },
       },
       update: {
-        quantity: { increment: quantity },
+        quantity: { increment: qty },
       },
       create: {
         userId: session.user.id,
         productId,
         variantId,
-        quantity,
+        quantity: qty,
       },
     })
 
