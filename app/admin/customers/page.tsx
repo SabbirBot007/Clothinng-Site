@@ -14,16 +14,16 @@ export default async function AdminCustomersPage() {
     orderBy: { createdAt: "desc" },
   })
 
-  const totalRevenue = customers.reduce((sum, c) => {
-    // 1. Calculate the valid revenue for just this specific customer
-    const customerValidOrders = c.orders.filter(
-      (o) => o.status !== "CANCELLED" && o.status !== "PENDING"
-    );
-    const customerTotal = customerValidOrders.reduce((s, o) => s + Number(o.total), 0);
+  // Helper: revenue counted only from orders that are not cancelled/pending
+  function getCustomerRevenue(orders: { total: any; status: string }[]): number {
+    return orders
+      .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
+      .reduce((sum: number, o) => sum + Number(o.total), 0)
+  }
 
-    // 2. Add it to the running grand total
-    return sum + customerTotal;
-  }, 0); // <-- The 0 here tells TypeScript 'sum' is a number!
+  const totalRevenue = customers.reduce((sum: number, c) => {
+    return sum + getCustomerRevenue(c.orders)
+  }, 0)
 
   return (
     <div>
@@ -64,7 +64,7 @@ export default async function AdminCustomersPage() {
             </p>
           </div>
         ) : (
-          <div>
+          <div className="admin-table-wrap">
             {/* Table header */}
             <div style={{
               display: "grid",
@@ -72,6 +72,7 @@ export default async function AdminCustomersPage() {
               padding: "12px 24px",
               borderBottom: "1px solid var(--border)",
               gap: "16px",
+              minWidth: "640px",
             }}>
               {["Customer", "Orders", "Spent", "Last Order", "Joined"].map((h) => (
                 <p key={h} style={{ fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 500 }}>
@@ -81,9 +82,7 @@ export default async function AdminCustomersPage() {
             </div>
 
             {customers.map((customer, i) => {
-              const totalSpent = customer.orders
-                .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
-                .reduce((sum, o) => sum + Number(o.total), 0)
+              const totalSpent = getCustomerRevenue(customer.orders)
               const lastOrder = customer.orders[0]
 
               return (
@@ -94,6 +93,7 @@ export default async function AdminCustomersPage() {
                   borderBottom: i < customers.length - 1 ? "1px solid var(--border-soft)" : "none",
                   alignItems: "center",
                   gap: "16px",
+                  minWidth: "640px",
                   transition: "background 0.2s",
                 }} className="admin-product-row">
                   {/* Customer */}
