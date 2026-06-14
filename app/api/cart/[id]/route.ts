@@ -1,0 +1,60 @@
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import db from "@/lib/db"
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    const { id } = await params
+    const { quantity } = await req.json()
+
+    if (!quantity || quantity < 1) {
+      return NextResponse.json({ error: "Invalid quantity" }, { status: 400 })
+    }
+
+    const item = await db.cartItem.findFirst({
+      where: { id, userId: session.user.id },
+      include: { variant: true },
+    })
+
+    if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 })
+    if (quantity > item.variant.stock) {
+      return NextResponse.json({ error: "Not enough stock" }, { status: 400 })
+    }
+
+    const updated = await db.cartItem.update({
+      where: { id },
+      data: { quantity },
+    })
+
+    return NextResponse.json(updated)
+  } catch {
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+    const { id } = await params
+
+    await db.cartItem.deleteMany({
+      where: { id, userId: session.user.id },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: "Failed to delete" }, { status: 500 })
+  }
+}
