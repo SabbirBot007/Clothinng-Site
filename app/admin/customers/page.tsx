@@ -14,11 +14,16 @@ export default async function AdminCustomersPage() {
     orderBy: { createdAt: "desc" },
   })
 
-  const totalRevenue = customers.reduce((sum: number, c) =>
-    sum + c.orders
-      .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
-      .reduce((s: number, o) => s + Number(o.total), 0), 0
-  )
+  const totalRevenue = customers.reduce((sum, c) => {
+    // 1. Calculate the valid revenue for just this specific customer
+    const customerValidOrders = c.orders.filter(
+      (o) => o.status !== "CANCELLED" && o.status !== "PENDING"
+    );
+    const customerTotal = customerValidOrders.reduce((s, o) => s + Number(o.total), 0);
+
+    // 2. Add it to the running grand total
+    return sum + customerTotal;
+  }, 0); // <-- The 0 here tells TypeScript 'sum' is a number!
 
   return (
     <div>
