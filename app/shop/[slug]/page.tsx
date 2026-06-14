@@ -176,7 +176,7 @@ export default async function ProductDetailPage({ params }: Props) {
               Customer Reviews
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
-              {product.reviews.map((review) => (
+              {product.reviews.map((review: any) => (
                 <div key={review.id} style={{ background: "var(--black-card)", border: "1px solid var(--border)", padding: "24px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
