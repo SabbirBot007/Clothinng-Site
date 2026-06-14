@@ -45,7 +45,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   const colors = [
     ...new Map(
-      product.variants.map((v) => [v.color, { color: v.color, colorHex: v.colorHex }])
+      product.variants.map((v: any) => [v.color, { color: v.color, colorHex: v.colorHex }])
     ).values(),
   ]
   const sizes = [...new Set(product.variants.map((v) => v.size))]
