@@ -14,10 +14,10 @@ export default async function AdminCustomersPage() {
     orderBy: { createdAt: "desc" },
   })
 
-  const totalRevenue = customers.reduce((sum, c) =>
+  const totalRevenue = customers.reduce((sum: number, c) =>
     sum + c.orders
       .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
-      .reduce((s, o) => s + Number(o.total), 0), 0
+      .reduce((s: number, o) => s + Number(o.total), 0), 0
   )
 
   return (
