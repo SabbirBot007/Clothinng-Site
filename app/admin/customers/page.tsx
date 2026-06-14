@@ -81,7 +81,7 @@ export default async function AdminCustomersPage() {
               ))}
             </div>
 
-            {customers.map((customer, i) => {
+            {customers.map((customer: any, i) => {
               const totalSpent = getCustomerRevenue(customer.orders)
               const lastOrder = customer.orders[0]
 
