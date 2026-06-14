@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     }
 
     // ── Atomic transaction: check stock + create order + decrement stock ──
-    const result = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx: any) => {
       const cartItems = await tx.cartItem.findMany({
         where: { userId: session.user.id },
         include: { product: true, variant: true },
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       }
 
       const subtotal = cartItems.reduce(
-        (sum, item) => sum + Number(item.product.price) * item.quantity, 0
+        (sum: number, item: any) => sum + Number(item.product.price) * item.quantity, 0
       )
       const shippingCost = subtotal >= 5000 ? 0 : 120
       const total = subtotal + shippingCost
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
           shippingCity: cleanCity,
           shippingZip: cleanZip,
           items: {
-            create: cartItems.map((item) => ({
+            create: cartItems.map((item: any) => ({
               productId: item.productId,
               variantId: item.variantId,
               productName: item.product.name,
