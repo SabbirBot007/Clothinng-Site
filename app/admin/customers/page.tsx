@@ -15,13 +15,13 @@ export default async function AdminCustomersPage() {
   })
 
   // Helper: revenue counted only from orders that are not cancelled/pending
-  function getCustomerRevenue(orders: { total: any; status: string }[]): number {
+  function getCustomerRevenue(orders: any[]) {
     return orders
       .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
       .reduce((sum: number, o) => sum + Number(o.total), 0)
   }
 
-  const totalRevenue = customers.reduce((sum: number, c) => {
+  const totalRevenue = customers.reduce((sum: number, c: {orders: any[]}) => {
     return sum + getCustomerRevenue(c.orders)
   }, 0)
 
