@@ -147,7 +147,7 @@ export default async function HomePage() {
               gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
               gap: "1px", background: "var(--border)",
             }}>
-              {featuredProducts.map((product) => (
+              {featuredProducts.map((product: any) => (
                 <Link key={product.id} href={`/shop/${product.slug}`} className="product-card">
                   <div className="product-card-image">
                     {product.images[0]
@@ -195,7 +195,7 @@ export default async function HomePage() {
               gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
               gap: "1px", background: "var(--border)",
             }}>
-              {categories.map((cat) => (
+              {categories.map((cat: any) => (
                 <Link key={cat.id} href={`/shop?category=${cat.slug}`} className="category-card">
                   <div style={{
                     fontSize: "10px", letterSpacing: "0.15em",
