@@ -391,7 +391,7 @@ export default async function AdminDashboard() {
               Categories
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {topCategories.map((cat) => (
+              {topCategories.map((cat: any) => (
                 <div key={cat.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{cat.name}</span>
                   <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{cat._count.products} products</span>
