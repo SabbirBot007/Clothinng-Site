@@ -277,7 +277,7 @@ export default async function AdminDashboard() {
                 <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>No orders yet</p>
               </div>
             ) : (
-              orders.slice(0, 5).map((order, i) => {
+              orders.slice(0, 5).map((order: any, i) => {
                 const cfg = statusConfig[order.status] || statusConfig.PENDING
                 return (
                   <Link key={order.id} href={`/admin/orders`} style={{
