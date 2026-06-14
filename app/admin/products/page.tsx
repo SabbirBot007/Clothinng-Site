@@ -60,8 +60,8 @@ export default async function AdminProductsPage() {
             </Link>
           </div>
         ) : (
-          products.map((product, i) => {
-            const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0)
+          products.map((product: any, i: number) => {
+            const totalStock = product.variants.reduce((sum: number, v: any) => sum + v.stock, 0)
             return (
               <div
                 key={product.id}
