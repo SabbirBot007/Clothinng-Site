@@ -36,7 +36,7 @@ export default async function AdminCustomersPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "16px", marginBottom: "32px" }}>
         {[
           { label: "Total Customers", value: customers.length, color: "var(--text-primary)" },
-          { label: "With Orders", value: customers.filter((c) => c._count.orders > 0).length, color: "var(--gold)" },
+          { label: "With Orders", value: customers.filter((c: { _count: { orders: number } }) => c._count.orders > 0).length, color: "var(--gold)" },
           { label: "Total Revenue", value: `৳${totalRevenue.toLocaleString()}`, color: "#22c55e" },
         ].map((stat) => (
           <div key={stat.label} style={{ background: "var(--black-card)", border: "1px solid var(--border)", padding: "20px" }}>
