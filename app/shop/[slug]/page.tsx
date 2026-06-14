@@ -139,7 +139,7 @@ export default async function ProductDetailPage({ params }: Props) {
               {/* Interactive actions — client component */}
               <ProductActions
                 productId={product.id}
-                variants={product.variants.map((v) => ({
+                variants={product.variants.map((v: any) => ({
                   id: v.id,
                   size: v.size,
                   color: v.color,
