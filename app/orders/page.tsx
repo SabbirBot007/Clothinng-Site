@@ -65,7 +65,7 @@ export default async function OrdersPage({ searchParams }: Props) {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {orders.map((order) => {
+              {orders.map((order: any) => {
                 const cfg = statusConfig[order.status] || statusConfig.PENDING
                 const isNew = order.id === orderId
                 return (
@@ -123,7 +123,7 @@ export default async function OrdersPage({ searchParams }: Props) {
 
                     {/* Items preview */}
                     <div style={{ display: "flex", gap: "8px", marginTop: "16px", overflowX: "auto" }}>
-                      {order.items.slice(0, 5).map((item) => (
+                      {order.items.slice(0, 5).map((item: any) => (
                         <div key={item.id} style={{
                           width: "52px", height: "70px", flexShrink: 0,
                           background: "var(--black-soft)", border: "1px solid var(--border)",
