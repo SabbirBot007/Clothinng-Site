@@ -146,8 +146,8 @@ export default async function ProductDetailPage({ params }: Props) {
                   colorHex: v.colorHex,
                   stock: v.stock,
                 }))}
-                colors={colors}
-                sizes={sizes}
+                colors={colors as any[]}
+                sizes={sizes as any[]}
               />
 
               {/* Shipping info */}
