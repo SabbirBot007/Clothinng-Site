@@ -1,22 +1,8 @@
 import db from "@/lib/db"
-import { Prisma } from "@prisma/client"
 import { Users } from "lucide-react"
 
-// 1. Define the exact type returned by your Prisma query
-type CustomerWithOrders = Prisma.UserGetPayload<{
-  where: { isAdmin: false },
-  include: {
-    orders: {
-      select: { total: true, status: true, createdAt: true },
-      orderBy: { createdAt: "desc" }
-    },
-    _count: { select: { orders: true } }
-  }
-}>
-
 export default async function AdminCustomersPage() {
-  // 2. Explicitly type the result of the query
-  const customers: CustomerWithOrders[] = await db.user.findMany({
+  const customers = await db.user.findMany({
     where: { isAdmin: false },
     include: {
       orders: {
@@ -28,15 +14,14 @@ export default async function AdminCustomersPage() {
     orderBy: { createdAt: "desc" },
   })
 
-  // 3. Type the orders array dynamically from the type above (no more `any[]`)
-  function getCustomerRevenue(orders: CustomerWithOrders["orders"]) {
+  // Helper: revenue counted only from orders that are not cancelled/pending
+  function getCustomerRevenue(orders: any[]) {
     return orders
       .filter((o) => o.status !== "CANCELLED" && o.status !== "PENDING")
-      .reduce((sum, o) => sum + Number(o.total), 0)
+      .reduce((sum: number, o) => sum + Number(o.total), 0)
   }
 
-  // 4. No need to manually type `sum` or `c` anymore, TypeScript infers them!
-  const totalRevenue = customers.reduce((sum, c) => {
+  const totalRevenue = customers.reduce((sum: number, c: {orders: any[]}) => {
     return sum + getCustomerRevenue(c.orders)
   }, 0)
 
@@ -51,7 +36,6 @@ export default async function AdminCustomersPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "16px", marginBottom: "32px" }}>
         {[
           { label: "Total Customers", value: customers.length, color: "var(--text-primary)" },
-          // This is the line that was throwing the build error. It now knows `c` is `CustomerWithOrders`!
           { label: "With Orders", value: customers.filter((c) => c._count.orders > 0).length, color: "var(--gold)" },
           { label: "Total Revenue", value: `৳${totalRevenue.toLocaleString()}`, color: "#22c55e" },
         ].map((stat) => (
