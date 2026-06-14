@@ -214,7 +214,7 @@ export default async function ProductDetailPage({ params }: Props) {
               Related Pieces
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1px", background: "var(--border)" }}>
-              {related.map((p) => (
+              {related.map((p: any) => (
                 <Link key={p.id} href={`/shop/${p.slug}`} className="product-card">
                   <div className="product-card-image">
                     {p.images[0]
