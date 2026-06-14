@@ -58,25 +58,25 @@ export default async function AdminDashboard() {
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
   const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const deliveredOrders = orders.filter((o) => o.status === "DELIVERED")
-  const activeOrders = orders.filter((o) => !["CANCELLED", "DELIVERED"].includes(o.status))
-  const cancelledOrders = orders.filter((o) => o.status === "CANCELLED")
+  const deliveredOrders = orders.filter((o: any) => o.status === "DELIVERED")
+  const activeOrders = orders.filter((o: any) => !["CANCELLED", "DELIVERED"].includes(o.status))
+  const cancelledOrders = orders.filter((o: any) => o.status === "CANCELLED")
 
-  const totalRevenue = deliveredOrders.reduce((sum, o) => sum + Number(o.total), 0)
+  const totalRevenue = deliveredOrders.reduce((sum: number, o: any) => sum + Number(o.total), 0)
 
   const thisMonthRevenue = deliveredOrders
-    .filter((o) => o.createdAt >= startOfMonth)
-    .reduce((sum, o) => sum + Number(o.total), 0)
+    .filter((o: any) => o.createdAt >= startOfMonth)
+    .reduce((sum: number, o: any) => sum + Number(o.total), 0)
 
   const lastMonthRevenue = deliveredOrders
-    .filter((o) => o.createdAt >= startOfLastMonth && o.createdAt <= endOfLastMonth)
-    .reduce((sum, o) => sum + Number(o.total), 0)
+    .filter((o: any) => o.createdAt >= startOfLastMonth && o.createdAt <= endOfLastMonth)
+    .reduce((sum: number, o: any) => sum + Number(o.total), 0)
 
   const revenueChange = lastMonthRevenue > 0
     ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
     : thisMonthRevenue > 0 ? 100 : 0
 
-  const ordersThisWeek = orders.filter((o) => o.createdAt >= last7Days).length
+  const ordersThisWeek = orders.filter((o: any) => o.createdAt >= last7Days).length
 
   const avgOrderValue = deliveredOrders.length > 0
     ? totalRevenue / deliveredOrders.length
@@ -84,11 +84,11 @@ export default async function AdminDashboard() {
 
   // Status breakdown
   const statusCounts = {
-    PENDING: orders.filter((o) => o.status === "PENDING").length,
-    PROCESSING: orders.filter((o) => o.status === "PROCESSING").length,
-    SHIPPED: orders.filter((o) => o.status === "SHIPPED").length,
-    DELIVERED: orders.filter((o) => o.status === "DELIVERED").length,
-    CANCELLED: orders.filter((o) => o.status === "CANCELLED").length,
+    PENDING: orders.filter((o: any) => o.status === "PENDING").length,
+    PROCESSING: orders.filter((o: any) => o.status === "PROCESSING").length,
+    SHIPPED: orders.filter((o: any) => o.status === "SHIPPED").length,
+    DELIVERED: orders.filter((o: any) => o.status === "DELIVERED").length,
+    CANCELLED: orders.filter((o: any) => o.status === "CANCELLED").length,
   }
 
   // Last 7 days revenue chart data
@@ -98,8 +98,8 @@ export default async function AdminDashboard() {
     date.setHours(0, 0, 0, 0)
     const nextDate = new Date(date.getTime() + 24 * 60 * 60 * 1000)
     const dayRevenue = deliveredOrders
-      .filter((o) => o.createdAt >= date && o.createdAt < nextDate)
-      .reduce((sum, o) => sum + Number(o.total), 0)
+      .filter((o: any) => o.createdAt >= date && o.createdAt < nextDate)
+      .reduce((sum: number, o: any) => sum + Number(o.total), 0)
     chartData.push({
       day: date.toLocaleDateString("en-GB", { weekday: "short" }),
       revenue: dayRevenue,
