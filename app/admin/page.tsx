@@ -363,7 +363,7 @@ export default async function AdminDashboard() {
                 <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>All stock levels healthy</p>
               </div>
             ) : (
-              lowStockVariants.map((v, i) => (
+              lowStockVariants.map((v: any, i: number) => (
                 <Link key={v.id} href={`/admin/products`} style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
                   padding: "12px 24px",
@@ -406,7 +406,7 @@ export default async function AdminDashboard() {
               <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border)" }}>
                 <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 300 }}>Recent Reviews</h2>
               </div>
-              {recentReviews.map((review, i) => (
+              {recentReviews.map((review: any, i: number) => (
                 <div key={review.id} style={{
                   padding: "14px 24px",
                   borderBottom: i < recentReviews.length - 1 ? "1px solid var(--border-soft)" : "none",
