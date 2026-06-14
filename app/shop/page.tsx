@@ -48,7 +48,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     return `/shop${qs ? `?${qs}` : ""}`
   }
 
-  const activeCategory = categories.find((c) => c.slug === params.category)
+  const activeCategory = categories.find((c: any) => c.slug === params.category)
 
   return (
     <main style={{ paddingTop: "var(--nav-height)", minHeight: "100vh" }}>
@@ -99,7 +99,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 paddingLeft: "10px", transition: "all 0.2s",
               }}>All</Link>
 
-              {categories.map((cat) => (
+              {categories.map((cat: any) => (
                 <Link key={cat.id} href={buildUrl(cat.slug, params.sort)} style={{
                   display: "block", fontSize: "12px", marginBottom: "10px",
                   color: params.category === cat.slug ? "var(--text-primary)" : "var(--text-muted)",
@@ -117,7 +117,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 color: "var(--gold)", fontWeight: 500, marginBottom: "14px",
               }}>Sort By</p>
 
-              {sortOptions.map((opt) => (
+              {sortOptions.map((opt: any) => (
                 <Link key={opt.value} href={buildUrl(params.category, opt.value)} style={{
                   display: "block", fontSize: "12px", marginBottom: "10px",
                   color: params.sort === opt.value ? "var(--text-primary)" : "var(--text-muted)",
@@ -149,7 +149,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 gap: "1px",
                 background: "var(--border)",
               }}>
-                {products.map((product) => (
+                {products.map((product: any) => (
                   <Link key={product.id} href={`/shop/${product.slug}`} className="product-card">
                     <div className="product-card-image">
                       {product.images[0]
