@@ -34,7 +34,7 @@ export default async function AdminOrdersPage() {
     delivered: orders.filter((o: any) => o.status === "DELIVERED").length,
     revenue: orders
       .filter((o: any) => o.status === "DELIVERED")
-      .reduce((sum, o) => sum + Number(o.total), 0),
+      .reduce((sum: number, o: any) => sum + Number(o.total), 0),
   }
 
   return (
