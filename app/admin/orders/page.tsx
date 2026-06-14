@@ -92,7 +92,7 @@ export default async function AdminOrdersPage() {
           </div>
         ) : (
           <div>
-            {orders.map((order, i) => {
+            {orders.map((order: any, i: number) => {
               const cfg = statusConfig[order.status] || statusConfig.PENDING
               return (
                 <div key={order.id} style={{
@@ -144,7 +144,7 @@ export default async function AdminOrdersPage() {
 
                     {/* Items preview */}
                     <div style={{ display: "flex", gap: "8px" }}>
-                      {order.items.slice(0, 3).map((item) => (
+                      {order.items.slice(0, 3).map((item: any) => (
                         <div key={item.id} style={{
                           width: "48px", height: "64px",
                           background: "var(--black-soft)",
