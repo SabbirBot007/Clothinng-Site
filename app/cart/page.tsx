@@ -44,7 +44,7 @@ export default function CartPage() {
 
   useEffect(() => { fetchCart() }, [])
 
-  async function updateQuantity(itemId: string, variantId: string, productId: string, newQty: number) {
+  async function updateQuantity(itemId: string, newQty: number) {
     if (newQty < 1) return
     setUpdating(itemId)
     try {
@@ -53,12 +53,15 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity: newQty }),
       })
-      if (!res.ok) throw new Error("Failed")
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || "Failed")
+      }
       setItems((prev) => prev.map((item) =>
         item.id === itemId ? { ...item, quantity: newQty } : item
       ))
-    } catch {
-      toast.error("Failed to update quantity")
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update quantity")
     } finally {
       setUpdating(null)
     }
@@ -93,11 +96,11 @@ export default function CartPage() {
 
   return (
     <main style={{ paddingTop: "var(--nav-height)", minHeight: "100vh" }}>
-      <div style={{ padding: "48px 0 64px" }}>
+      <div style={{ padding: "32px 0 64px" }}>
         <div className="container">
 
           {/* Header */}
-          <div style={{ marginBottom: "40px" }}>
+          <div style={{ marginBottom: "32px" }}>
             <p className="section-label">Your Selection</p>
             <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 300 }}>
               Shopping Cart
@@ -119,50 +122,54 @@ export default function CartPage() {
             <div className="cart-layout">
 
               {/* Cart items */}
-              <div style={{ flex: 1 }}>
-                {/* Header row */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr auto auto auto",
-                  gap: "16px",
-                  padding: "0 0 12px",
-                  borderBottom: "1px solid var(--border)",
-                  marginBottom: "4px",
-                }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+
+                {/* Header row — desktop only */}
+                <div className="cart-header-row">
                   {["Product", "Size / Color", "Qty", "Price"].map((h) => (
                     <p key={h} style={{ fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 500 }}>{h}</p>
                   ))}
                 </div>
 
                 {items.map((item) => (
-                  <div key={item.id} style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto auto auto",
-                    gap: "16px",
-                    padding: "20px 0",
-                    borderBottom: "1px solid var(--border-soft)",
-                    alignItems: "center",
+                  <div key={item.id} className="cart-item-row" style={{
                     opacity: updating === item.id ? 0.5 : 1,
                     transition: "opacity 0.2s",
                   }}>
-                    {/* Product */}
-                    <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                      <Link href={`/shop/${item.product.slug}`}>
-                        <div style={{ width: "80px", height: "106px", background: "var(--black-soft)", border: "1px solid var(--border)", overflow: "hidden", flexShrink: 0 }}>
+
+                    {/* Product info */}
+                    <div className="cart-item-product">
+                      <Link href={`/shop/${item.product.slug}`} style={{ flexShrink: 0 }}>
+                        <div style={{ width: "80px", height: "106px", background: "var(--black-soft)", border: "1px solid var(--border)", overflow: "hidden" }}>
                           {item.product.images[0] && (
                             <img src={item.product.images[0].url} alt={item.product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           )}
                         </div>
                       </Link>
-                      <div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <Link href={`/shop/${item.product.slug}`} style={{ textDecoration: "none" }}>
                           <p style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 400, color: "var(--text-primary)", marginBottom: "4px" }}>
                             {item.product.name}
                           </p>
                         </Link>
-                        <p style={{ fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.05em" }}>
+                        <p style={{ fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.05em", marginBottom: "8px" }}>
                           {item.product.category.name}
                         </p>
+
+                        {/* Size/Color — mobile shows here */}
+                        <div className="cart-item-meta-mobile">
+                          <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{item.variant.size}</span>
+                          {item.variant.colorHex && (
+                            <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: item.variant.colorHex, border: "1px solid var(--border)" }} />
+                          )}
+                          <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{item.variant.color}</span>
+                        </div>
+
+                        {/* Price — mobile shows here */}
+                        <p className="cart-item-price-mobile">
+                          ৳{(Number(item.product.price) * item.quantity).toLocaleString()}
+                        </p>
+
                         <button onClick={() => removeItem(item.id)} style={{
                           background: "none", border: "none", cursor: "pointer",
                           color: "var(--text-muted)", fontSize: "11px",
@@ -180,8 +187,8 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* Size / Color */}
-                    <div style={{ textAlign: "center" }}>
+                    {/* Size / Color — desktop only */}
+                    <div className="cart-item-meta-desktop">
                       <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px" }}>{item.variant.size}</p>
                       <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
                         {item.variant.colorHex && (
@@ -192,28 +199,30 @@ export default function CartPage() {
                     </div>
 
                     {/* Quantity */}
-                    <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border)" }}>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.variant.id, item.product.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1 || updating === item.id}
-                        style={{ width: "32px", height: "32px", background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}
-                      >
-                        <Minus size={12} />
-                      </button>
-                      <span style={{ width: "32px", textAlign: "center", fontSize: "13px", color: "var(--text-primary)" }}>
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.variant.id, item.product.id, item.quantity + 1)}
-                        disabled={item.quantity >= item.variant.stock || updating === item.id}
-                        style={{ width: "32px", height: "32px", background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}
-                      >
-                        <Plus size={12} />
-                      </button>
+                    <div className="cart-item-qty">
+                      <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border)" }}>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1 || updating === item.id}
+                          style={{ width: "32px", height: "32px", background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span style={{ width: "32px", textAlign: "center", fontSize: "13px", color: "var(--text-primary)" }}>
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          disabled={item.quantity >= item.variant.stock || updating === item.id}
+                          style={{ width: "32px", height: "32px", background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Price */}
-                    <p style={{ fontSize: "15px", color: "var(--gold)", fontWeight: 500, textAlign: "right", whiteSpace: "nowrap" }}>
+                    {/* Price — desktop only */}
+                    <p className="cart-item-price-desktop">
                       ৳{(Number(item.product.price) * item.quantity).toLocaleString()}
                     </p>
                   </div>
@@ -225,8 +234,8 @@ export default function CartPage() {
               </div>
 
               {/* Order summary */}
-              <div style={{ width: "320px", flexShrink: 0 }}>
-                <div style={{ background: "var(--black-card)", border: "1px solid var(--border)", padding: "28px", position: "sticky", top: "calc(var(--nav-height) + 24px)" }}>
+              <div className="cart-summary">
+                <div style={{ background: "var(--black-card)", border: "1px solid var(--border)", padding: "28px" }}>
                   <h2 style={{ fontFamily: "var(--font-display)", fontSize: "22px", fontWeight: 300, marginBottom: "24px" }}>
                     Order Summary
                   </h2>
@@ -261,7 +270,7 @@ export default function CartPage() {
                   </Link>
 
                   <p style={{ fontSize: "11px", color: "var(--text-muted)", textAlign: "center", marginTop: "16px", lineHeight: 1.6 }}>
-                    Secure checkout via bKash / Nagad / Card
+                    Pay with Cash on Delivery
                   </p>
                 </div>
               </div>
@@ -271,11 +280,91 @@ export default function CartPage() {
       </div>
 
       <style>{`
-        .cart-layout { display: flex; gap: 48px; align-items: flex-start; }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @media (max-width: 900px) {
+
+        .cart-layout { display: flex; gap: 48px; align-items: flex-start; }
+
+        /* Desktop header row */
+        .cart-header-row {
+          display: grid;
+          grid-template-columns: 1fr auto auto auto;
+          gap: 16px;
+          padding: 0 0 12px;
+          border-bottom: 1px solid var(--border);
+          margin-bottom: 4px;
+        }
+
+        /* Each cart item row */
+        .cart-item-row {
+          display: grid;
+          grid-template-columns: 1fr auto auto auto;
+          gap: 16px;
+          padding: 20px 0;
+          border-bottom: 1px solid var(--border-soft);
+          align-items: center;
+        }
+
+        .cart-item-product {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+        }
+
+        .cart-item-meta-desktop { text-align: center; }
+        .cart-item-meta-mobile { display: none; }
+        .cart-item-price-desktop {
+          font-size: 15px; color: var(--gold); font-weight: 500;
+          text-align: right; white-space: nowrap;
+        }
+        .cart-item-price-mobile { display: none; }
+
+        .cart-summary { width: 320px; flex-shrink: 0; }
+        .cart-summary > div { position: sticky; top: calc(var(--nav-height) + 24px); }
+
+        /* ── Mobile layout ── */
+        @media (max-width: 768px) {
           .cart-layout { flex-direction: column; }
-          .cart-layout > div:last-child { width: 100% !important; }
+
+          .cart-header-row { display: none; }
+
+          .cart-item-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+
+          .cart-item-product {
+            align-items: flex-start;
+          }
+
+          /* Hide desktop-only columns */
+          .cart-item-meta-desktop,
+          .cart-item-price-desktop {
+            display: none;
+          }
+
+          /* Show mobile meta + price inline with product info */
+          .cart-item-meta-mobile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+          }
+          .cart-item-price-mobile {
+            display: block;
+            font-size: 16px;
+            color: var(--gold);
+            font-weight: 500;
+            margin-bottom: 10px;
+          }
+
+          /* Quantity selector — full width row below product on mobile */
+          .cart-item-qty {
+            margin-top: 12px;
+            grid-column: 1;
+          }
+
+          .cart-summary { width: 100%; }
+          .cart-summary > div { position: static; }
         }
       `}</style>
     </main>
