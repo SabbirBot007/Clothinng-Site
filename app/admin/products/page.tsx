@@ -16,7 +16,7 @@ export default async function AdminProductsPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px" }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "40px", flexWrap: "wrap", gap: "16px" }}>
         <div>
           <p className="section-label">Admin</p>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "36px", fontWeight: 300 }}>
@@ -29,21 +29,18 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      {/* Table */}
+      {/* Products list - Styled like the Orders page */}
       <div style={{ background: "var(--black-card)", border: "1px solid var(--border)" }}>
-        {/* Table header */}
+        
+        {/* List Header */}
         <div style={{
-          display: "grid",
-          gridTemplateColumns: "60px 1fr 140px 100px 80px 100px 120px",
-          padding: "12px 24px",
-          borderBottom: "1px solid var(--border)",
-          gap: "16px",
+          padding: "20px 24px", borderBottom: "1px solid var(--border)",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          {["", "Product", "Category", "Price", "Stock", "Status", "Actions"].map((h) => (
-            <p key={h} style={{ fontSize: "9px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 500 }}>
-              {h}
-            </p>
-          ))}
+          <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 300 }}>
+            All Products
+          </h2>
+          <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{products.length} products</p>
         </div>
 
         {products.length === 0 ? (
@@ -60,110 +57,119 @@ export default async function AdminProductsPage() {
             </Link>
           </div>
         ) : (
-          products.map((product: any, i: number) => {
-            const totalStock = product.variants.reduce((sum: number, v: any) => sum + v.stock, 0)
-            return (
-              <div
-                key={product.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "60px 1fr 140px 100px 80px 100px 120px",
-                  padding: "16px 24px",
-                  borderBottom: i < products.length - 1 ? "1px solid var(--border-soft)" : "none",
-                  alignItems: "center",
-                  gap: "16px",
-                  transition: "background 0.2s",
-                }}
-                className="admin-product-row"
-              >
-                {/* Image */}
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  background: "var(--black-soft)",
-                  border: "1px solid var(--border)",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                }}>
-                  {product.images[0] && (
-                    <img
-                      src={product.images[0].url}
-                      alt={product.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  )}
-                </div>
-
-                {/* Name */}
-                <div>
-                  <p style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: 500, marginBottom: "2px" }}>
-                    {product.name}
-                  </p>
-                  <p style={{ fontSize: "10px", color: "var(--text-muted)", letterSpacing: "0.05em" }}>
-                    {product.isFeatured && <span style={{ color: "var(--gold)", marginRight: "8px" }}>★ Featured</span>}
-                    {product.slug}
-                  </p>
-                </div>
-
-                {/* Category */}
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                  {product.category.name}
-                </p>
-
-                {/* Price */}
-                <p style={{ fontSize: "13px", color: "var(--gold)", fontWeight: 500 }}>
-                  ৳{Number(product.price).toLocaleString()}
-                </p>
-
-                {/* Stock */}
-                <p style={{
-                  fontSize: "12px",
-                  color: totalStock === 0 ? "#ef4444" : totalStock < 10 ? "#f59e0b" : "var(--text-secondary)",
-                  fontWeight: 500,
-                }}>
-                  {totalStock}
-                </p>
-
-                {/* Status */}
-                <div>
-                  <span style={{
-                    fontSize: "9px",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                    padding: "4px 10px",
-                    background: product.isActive ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
-                    color: product.isActive ? "#22c55e" : "#ef4444",
-                    border: `1px solid ${product.isActive ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
+          <div>
+            {products.map((product: any, i: number) => {
+              const totalStock = product.variants.reduce((sum: number, v: any) => sum + v.stock, 0)
+              return (
+                <div
+                  key={product.id}
+                  style={{
+                    padding: "20px 24px",
+                    borderBottom: i < products.length - 1 ? "1px solid var(--border-soft)" : "none",
+                    transition: "background 0.2s",
+                  }}
+                  className="admin-product-row"
+                >
+                  <div style={{
+                    display: "flex", justifyContent: "space-between",
+                    alignItems: "flex-start", flexWrap: "wrap", gap: "16px",
                   }}>
-                    {product.isActive ? "Active" : "Hidden"}
-                  </span>
-                </div>
 
-                {/* Actions */}
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <Link
-                    href={`/admin/products/${product.id}/edit`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "32px",
-                      height: "32px",
-                      border: "1px solid var(--border)",
-                      color: "var(--text-muted)",
-                      textDecoration: "none",
-                      transition: "all 0.2s",
-                    }}
-                    className="admin-action-btn"
-                  >
-                    <Pencil size={13} />
-                  </Link>
-                  <AdminDeleteProduct productId={product.id} productName={product.name} />
+                    {/* Product Info (Left Side) */}
+                    <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flex: "1 1 250px" }}>
+                      {/* Image */}
+                      <div style={{
+                        width: "48px",
+                        height: "64px",
+                        background: "var(--black-soft)",
+                        border: "1px solid var(--border)",
+                        overflow: "hidden",
+                        flexShrink: 0,
+                      }}>
+                        {product.images[0] && (
+                          <img
+                            src={product.images[0].url}
+                            alt={product.name}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Details */}
+                      <div>
+                        <p style={{ fontSize: "14px", color: "var(--text-primary)", fontWeight: 500, marginBottom: "4px" }}>
+                          {product.name}
+                        </p>
+                        <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px" }}>
+                          {product.category.name}
+                        </p>
+                        <p style={{ fontSize: "10px", color: "var(--text-muted)", fontFamily: "monospace", marginBottom: "4px" }}>
+                          {product.slug}
+                        </p>
+                        {product.isFeatured && (
+                          <p style={{ fontSize: "10px", color: "var(--gold)", fontWeight: 500 }}>
+                            ★ Featured
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Price, Stock, Status & Actions (Right Side) */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px", minWidth: "160px" }}>
+                      <p style={{ fontSize: "18px", color: "var(--gold)", fontWeight: 500 }}>
+                        ৳{Number(product.price).toLocaleString()}
+                      </p>
+                      
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <p style={{
+                          fontSize: "11px",
+                          color: totalStock === 0 ? "#ef4444" : totalStock < 10 ? "#f59e0b" : "var(--text-secondary)",
+                          fontWeight: 500,
+                        }}>
+                          Stock: {totalStock}
+                        </p>
+                        <span style={{
+                          fontSize: "9px",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          fontWeight: 600,
+                          padding: "4px 10px",
+                          background: product.isActive ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                          color: product.isActive ? "#22c55e" : "#ef4444",
+                          border: `1px solid ${product.isActive ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
+                        }}>
+                          {product.isActive ? "Active" : "Hidden"}
+                        </span>
+                      </div>
+
+                      {/* Actions */}
+                      <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "32px",
+                            height: "32px",
+                            border: "1px solid var(--border)",
+                            color: "var(--text-muted)",
+                            textDecoration: "none",
+                            transition: "all 0.2s",
+                          }}
+                          className="admin-action-btn"
+                        >
+                          <Pencil size={13} />
+                        </Link>
+                        <AdminDeleteProduct productId={product.id} productName={product.name} />
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-              </div>
-            )
-          })
+              )
+            })}
+          </div>
         )}
       </div>
 
