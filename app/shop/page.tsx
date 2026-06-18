@@ -30,9 +30,24 @@ async function getCategories() {
   return await db.category.findMany({ where: { isActive: true } })
 }
 
+async function getFeaturedProducts() {
+  return await db.product.findMany({
+    where: { isActive: true, isFeatured: true },
+    include: {
+      images: { orderBy: { position: "asc" }, take: 1 },
+      category: true,
+    },
+    take: 4,
+  })
+}
+
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams
-  const [products, categories] = await Promise.all([getProducts(params), getCategories()])
+  const [products, categories, featuredProducts] = await Promise.all([
+    getProducts(params),
+    getCategories(),
+    getFeaturedProducts(),
+  ])
 
   const sortOptions = [
     { value: "newest", label: "Newest" },
@@ -49,11 +64,66 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   }
 
   const activeCategory = categories.find((c: any) => c.slug === params.category)
+  const isFiltered = !!params.category || !!params.sort || !!params.search
 
   return (
     <main style={{ paddingTop: "var(--nav-height)", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ padding: "48px 0 28px", borderBottom: "1px solid var(--border)" }}>
+
+      {/* ── FEATURED PRODUCTS (only shown on unfiltered root view) ── */}
+      {!isFiltered && featuredProducts.length > 0 && (
+        <section style={{
+          padding: "48px 0",
+          background: "var(--black-soft)",
+          borderBottom: "1px solid var(--border)",
+        }}>
+          <div className="container">
+            <div style={{
+              display: "flex", alignItems: "baseline",
+              justifyContent: "space-between", marginBottom: "28px",
+            }}>
+              <div>
+                <p className="section-label">Handpicked</p>
+                <h2 style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(22px, 4vw, 36px)",
+                  fontWeight: 300,
+                }}>Featured Pieces</h2>
+              </div>
+            </div>
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: "1px",
+              background: "var(--border)",
+            }}>
+              {featuredProducts.map((product: any) => (
+                <Link key={product.id} href={`/shop/${product.slug}`} className="product-card">
+                  <div className="product-card-image">
+                    {product.images[0]
+                      ? <img src={product.images[0].url} alt={product.images[0].altText || product.name} />
+                      : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>NO IMAGE</div>
+                    }
+                    <div className="product-card-overlay">
+                      <span className="btn-primary" style={{ fontSize: "10px", padding: "10px 20px" }}>
+                        Quick View
+                      </span>
+                    </div>
+                  </div>
+                  <div className="product-card-info">
+                    <p className="product-card-category">{product.category.name}</p>
+                    <h3 className="product-card-name">{product.name}</h3>
+                    <p className="product-card-price">৳{Number(product.price).toLocaleString()}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── SHOP HEADER ── */}
+      <div style={{ padding: "40px 0 24px", borderBottom: "1px solid var(--border)" }}>
         <div className="container">
           <p className="section-label">Explore</p>
           <h1 style={{
@@ -71,7 +141,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       <div className="container" style={{ padding: "32px 1rem 64px" }}>
 
-        {/* ── Mobile filters (dropdowns) ── */}
+        {/* ── Mobile filters ── */}
         <div style={{ marginBottom: "24px" }} className="mobile-only">
           <ShopFilters
             categories={categories}
@@ -82,9 +152,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
         <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
 
-          {/* ── Desktop sidebar filters ── */}
+          {/* ── Desktop sidebar ── */}
           <aside style={{ width: "160px", flexShrink: 0 }} className="desktop-only">
-            {/* Categories */}
             <div style={{ marginBottom: "32px" }}>
               <p style={{
                 fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase",
@@ -110,7 +179,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               ))}
             </div>
 
-            {/* Sort */}
             <div>
               <p style={{
                 fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase",

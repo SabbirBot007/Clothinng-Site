@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react"
 import { usePathname } from "next/navigation"
-import { ShoppingBag, User, LogOut, LayoutDashboard, Package, HeartIcon } from "lucide-react"
+import { ShoppingBag, HeartIcon, LayoutDashboard, Package, LogOut, User } from "lucide-react"
 import CartCount from "@/components/CartCount"
 
 export default function Navbar() {
@@ -12,15 +12,8 @@ export default function Navbar() {
 
   if (pathname.startsWith("/admin")) return null
 
-  const navLinks = [
-    { label: "New Arrivals", href: "/shop?sort=newest" },
-    { label: "All Products", href: "/shop" },
-    { label: "Collections", href: "/shop?collection=true" },
-  ]
-
   return (
     <>
-      {/* Pure CSS checkbox hack — no JS needed for hamburger */}
       <input type="checkbox" id="nav-toggle" style={{ display: "none" }} />
 
       <nav style={{
@@ -46,15 +39,6 @@ export default function Navbar() {
             Maison<span style={{ color: "var(--gold)" }}>.</span>
           </Link>
 
-          {/* Desktop links */}
-          <div className="nav-desktop-links">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="gold-link">
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
           {/* Right side */}
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
 
@@ -68,6 +52,7 @@ export default function Navbar() {
               <CartCount />
             </Link>
 
+            {/* Wishlist */}
             <Link href="/wishlist" style={{
               position: "relative", color: "var(--text-secondary)", display: "flex",
               alignItems: "center", padding: "10px",
@@ -121,7 +106,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Hamburger label */}
+            {/* Hamburger */}
             <label htmlFor="nav-toggle" className="nav-hamburger" style={{
               display: "none", flexDirection: "column", gap: "5px",
               cursor: "pointer", padding: "10px", zIndex: 101,
@@ -134,10 +119,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu drawer */}
+      {/* Mobile drawer */}
       <div className="mobile-menu-drawer">
         <div style={{ padding: "24px 20px 48px" }}>
-          {/* Close */}
           <label htmlFor="nav-toggle" style={{
             display: "flex", justifyContent: "flex-end",
             cursor: "pointer", padding: "4px 0 20px",
@@ -147,19 +131,7 @@ export default function Navbar() {
             Close ✕
           </label>
 
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} style={{
-              display: "block", padding: "18px 0",
-              borderBottom: "1px solid var(--border-soft)",
-              fontFamily: "var(--font-display)", fontSize: "26px",
-              fontWeight: 300, color: "var(--text-primary)",
-              textDecoration: "none", letterSpacing: "0.03em",
-            }}>
-              {link.label}
-            </Link>
-          ))}
-
-          <div style={{ marginTop: "36px", display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "20px" }}>
             {session ? (
               <>
                 <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>{session.user?.email}</p>
