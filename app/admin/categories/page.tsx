@@ -71,7 +71,8 @@ export default function CategoriesPage() {
         </h1>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "32px", alignItems: "start" }}>
+      {/* ── Responsive Grid Container ── */}
+      <div className="categories-layout" style={{ gap: "32px", alignItems: "start" }}>
 
         {/* ── Add Category Form ── */}
         <div style={{
@@ -194,7 +195,23 @@ export default function CategoriesPage() {
       </div>
 
       <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spin { 
+          from { transform: rotate(0deg); } 
+          to { transform: rotate(360deg); } 
+        }
+
+        /* Mobile-first: stack columns */
+        .categories-layout {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        /* Desktop: switch back to 2 columns */
+        @media (min-width: 768px) {
+          .categories-layout {
+            grid-template-columns: 1fr 1.5fr;
+          }
+        }
       `}</style>
     </div>
   )
