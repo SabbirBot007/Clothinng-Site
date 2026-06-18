@@ -1,6 +1,7 @@
 import Link from "next/link"
 import db from "@/lib/db"
 import ShopFilters from "@/components/ShopFilters"
+import FeaturedCarousel from "@/components/FeaturedCarousel" // <-- Import the new component
 
 interface ShopPageProps {
   searchParams: Promise<{ category?: string; sort?: string; search?: string }>
@@ -37,7 +38,7 @@ async function getFeaturedProducts() {
       images: { orderBy: { position: "asc" }, take: 1 },
       category: true,
     },
-    take: 4,
+    take: 8, // Optional: You might want to increase this so the slider has more items to show
   })
 }
 
@@ -91,33 +92,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               </div>
             </div>
 
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-              gap: "1px",
-              background: "var(--border)",
-            }}>
-              {featuredProducts.map((product: any) => (
-                <Link key={product.id} href={`/shop/${product.slug}`} className="product-card">
-                  <div className="product-card-image">
-                    {product.images[0]
-                      ? <img src={product.images[0].url} alt={product.images[0].altText || product.name} />
-                      : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>NO IMAGE</div>
-                    }
-                    <div className="product-card-overlay">
-                      <span className="btn-primary" style={{ fontSize: "10px", padding: "10px 20px" }}>
-                        Quick View
-                      </span>
-                    </div>
-                  </div>
-                  <div className="product-card-info">
-                    <p className="product-card-category">{product.category.name}</p>
-                    <h3 className="product-card-name">{product.name}</h3>
-                    <p className="product-card-price">৳{Number(product.price).toLocaleString()}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            {/* Replaced the static grid with the Carousel component */}
+            <FeaturedCarousel 
+              products={featuredProducts.map((product: any) => ({
+                ...product,
+                price: Number(product.price) 
+              }))}
+            />
+
           </div>
         </section>
       )}
