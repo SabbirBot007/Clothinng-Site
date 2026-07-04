@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import {
   LayoutDashboard,
   Package,
@@ -42,8 +43,16 @@ export default function AdminSidebar() {
             fontFamily: "var(--font-display)", fontSize: "18px",
             fontWeight: 300, letterSpacing: "0.2em",
             color: "var(--text-primary)", textTransform: "uppercase",
+            display: "flex", alignItems: "center", gap: "8px"
           }}>
-            Maison<span style={{ color: "var(--gold)" }}>.</span>
+            <Image
+              src="/Logo.png"
+              alt="Next Era"
+              width={20} 
+              height={20} 
+              style={{ objectFit: "contain" }}
+            />
+            Next Era
           </div>
           <p style={{
             fontSize: "9px", letterSpacing: "0.15em",
@@ -171,7 +180,7 @@ export default function AdminSidebar() {
           fontWeight: 300, letterSpacing: "0.2em",
           color: "var(--text-primary)", textTransform: "uppercase",
         }}>
-          Maison<span style={{ color: "var(--gold)" }}>.</span>
+          Next Era
         </div>
         <Link href="/" style={{ color: "var(--text-secondary)", display: "flex" }}>
           <Store size={18} strokeWidth={1.5} />

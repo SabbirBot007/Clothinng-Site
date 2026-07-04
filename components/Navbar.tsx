@@ -5,6 +5,7 @@ import { useSession, signIn, signOut } from "next-auth/react"
 import { usePathname } from "next/navigation"
 import { ShoppingBag, HeartIcon, LayoutDashboard, Package, LogOut, User } from "lucide-react"
 import CartCount from "@/components/CartCount"
+import Image from "next/image"
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -35,9 +36,19 @@ export default function Navbar() {
             fontWeight: 300, letterSpacing: "0.2em",
             color: "var(--text-primary)", textDecoration: "none",
             textTransform: "uppercase", zIndex: 101, flexShrink: 0,
+            display: "flex", alignItems: "center", gap: "8px" 
           }}>
-            Maison<span style={{ color: "var(--gold)" }}>.</span>
+            <Image
+              src="/Logo.png"
+              alt="Next Era"
+              width={30}
+              height={30}
+              style={{ objectFit: "contain" }}
+            />
+            NEXT ERA
           </Link>
+
+          
 
           {/* Right side */}
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
